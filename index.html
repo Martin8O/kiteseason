@@ -331,14 +331,8 @@ nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;st
 
     <section>
       <h2 data-i18n="h.spot">Spot</h2>
-      <div class="two">
-        <div class="field"><label for="latIn" data-i18n="set.lat">Šířka</label><input type="number" id="latIn" step="0.0001" inputmode="decimal"></div>
-        <div class="field"><label for="lonIn" data-i18n="set.lon">Délka</label><input type="number" id="lonIn" step="0.0001" inputmode="decimal"></div>
-      </div>
-      <div class="two">
-        <button class="btn primary" id="reload" data-i18n="btn.load">Načíst předpověď</button>
-        <button class="btn" id="geo" data-i18n="btn.geo">Jsem tady</button>
-      </div>
+      <p style="margin:0;font-size:14px"><b id="setSpotName">Lo Stagnone · Birgi</b><br>
+        <span class="num" id="setCoords" style="color:var(--sand-dim);font-size:13px"></span></p>
       <p class="hint" id="setHint"></p>
     </section>
   </div>
@@ -375,7 +369,7 @@ function regionalFor(lat,lon){
 }
 
 const SPOTS = [
-  {id:"stagnone", name:"Lo Stagnone · Birgi", lat:37.8700, lon:12.4620, norm:280}
+  {id:"stagnone", name:"Lo Stagnone · Birgi", lat:37.8863002, lon:12.4711967, norm:280}
 ];
 
 /* ===========================================================
@@ -419,15 +413,15 @@ cs:{
   "h.station":"Na spotu teď","h.models":"Modely na rozhodující hodinu","h.hours":"Hodinu po hodině",
   "h.week":"Sedm dní","h.windows":"Okna, která splňují tvoje podmínky","h.rider":"Jezdec",
   "h.limits":"Kdy chceš na vodu","h.modelsSet":"Modely, ze kterých počítám průměr","h.spot":"Spot",
-  "refresh":"Načíst znovu","btn.station":"Zadat hodnoty ze stanice","btn.load":"Načíst předpověď",
-  "btn.geo":"Jsem tady","btn.cal":"Do kalendáře","btn.copy":"Zkopírovat",
+  "refresh":"Načíst znovu","btn.station":"Zadat hodnoty ze stanice",
+  "btn.cal":"Do kalendáře","btn.copy":"Zkopírovat",
   "range.3d":"3 dny","chart.each":"Vykreslit modely zvlášť",
   "set.weight":"Váha","set.board":"Prkno","set.skill":"Úroveň","set.quiver":"Kity v tašce",
   "set.min":"Nejedu pod","set.max":"Nejedu nad","set.units":"Jednotky",
   "set.shore":"Ze břehu koukáš na vodu směrem",
   "set.shoreHint":"Podle toho poznám onshore a offshore. Postav se na startovce zády k pevnině a odhadni azimut, kam se díváš.",
   "set.modelsHint":"Konsenzus je průměr zaškrtnutých modelů — stejný princip, na kterém stojí Windguru Mix. Světlý pás v grafu ukazuje, jak daleko od sebe modely jsou.",
-  "set.lat":"Šířka","set.lon":"Délka",
+  
   "board.surf":"Surf","skill.beg":"Začátečník","skill.int":"Pokročilý","skill.adv":"Zkušený",
   "st.avg":"Průměr","st.gust":"V poryvech","st.min":"Nejnižší","st.dir":"Směr","st.temp":"Vzduch","st.pres":"Tlak","st.water":"Voda",
   "kite.addPrompt":"Velikost kitu v m²:","kite.add":"Přidat kite",
@@ -476,15 +470,15 @@ en:{
   "h.station":"At the spot right now","h.models":"Models for the decisive hour","h.hours":"Hour by hour",
   "h.week":"Seven days","h.windows":"Windows that match your limits","h.rider":"Rider",
   "h.limits":"When you go out","h.modelsSet":"Models feeding the average","h.spot":"Spot",
-  "refresh":"Reload","btn.station":"Enter station reading","btn.load":"Load forecast",
-  "btn.geo":"Use my location","btn.cal":"Add to calendar","btn.copy":"Copy",
+  "refresh":"Reload","btn.station":"Enter station reading",
+  "btn.cal":"Add to calendar","btn.copy":"Copy",
   "range.3d":"3 days","chart.each":"Draw each model",
   "set.weight":"Weight","set.board":"Board","set.skill":"Level","set.quiver":"Kites in the bag",
   "set.min":"Don't go below","set.max":"Don't go above","set.units":"Units",
   "set.shore":"From the beach you face the water at",
   "set.shoreHint":"This is how I tell onshore from offshore. Stand at the launch with your back to land and estimate the bearing you're facing.",
   "set.modelsHint":"The consensus is the average of the ticked models — the same idea behind Windguru Mix. The pale band in the chart shows how far apart they are.",
-  "set.lat":"Latitude","set.lon":"Longitude",
+  
   "board.surf":"Surf","skill.beg":"Beginner","skill.int":"Intermediate","skill.adv":"Advanced",
   "st.avg":"Average","st.gust":"Gusts","st.min":"Lull","st.dir":"Direction","st.temp":"Air","st.pres":"Pressure","st.water":"Water",
   "kite.addPrompt":"Kite size in m²:","kite.add":"Add kite",
@@ -559,13 +553,12 @@ const store = {
 const KEY="kiteseason:v2";
 async function save(){
   await store.set(KEY,{lang:S.lang,units:S.units,enabled:S.enabled,rider:S.rider,
-    minw:S.minw,maxw:S.maxw,norm:S.norm,spot:S.spot});
+    minw:S.minw,maxw:S.maxw,norm:S.norm});
 }
 async function load(){
   const v=await store.get(KEY); if(!v) return;
   if(v.lang) S.lang=v.lang;
   if(v.units) S.units=v.units;
-  if(v.spot&&typeof v.spot.lat==="number") S.spot=v.spot;
   if(Array.isArray(v.enabled)) S.enabled=v.enabled;
   if(v.rider) S.rider=Object.assign(S.rider,v.rider);
   ["minw","maxw","norm"].forEach(k=>{ if(typeof v[k]==="number") S[k]=v[k]; });
@@ -1386,6 +1379,8 @@ function renderSpots(){
   if(key!==lastSpotKey){ lastSpotKey=key; if(MV&&MV.reset){ MV.reset(); applyView(); } }
   $("#spotName").textContent=S.spot.name;
   $("#mapSpot").textContent=S.spot.name;
+  $("#setSpotName").textContent=S.spot.name;
+  $("#setCoords").textContent=S.spot.lat.toFixed(5)+" N, "+S.spot.lon.toFixed(5)+" E";
 }
 
 /* ===========================================================
@@ -1424,27 +1419,12 @@ $("#editStation").onclick=()=>{
              temp:a.temp,pres:null,at:hm(nowU())};
   renderStation(); renderHero(); renderMap();
 };
-$("#reload").onclick=()=>{
-  const la=parseFloat($("#latIn").value), lo=parseFloat($("#lonIn").value);
-  if(isNaN(la)||isNaN(lo)){$("#setHint").textContent=f().badCoords();return;}
-  S.spot={id:"custom",name:(S.lang==="cs"?"Vlastní spot":"Custom spot"),lat:la,lon:lo,norm:S.norm};
-  S.station=null; boot(true); save(); setTab("now");
-};
-$("#geo").onclick=()=>{
-  if(!navigator.geolocation){$("#setHint").textContent=f().geoFail();return;}
-  navigator.geolocation.getCurrentPosition(
-    p=>{ $("#latIn").value=p.coords.latitude.toFixed(4); $("#lonIn").value=p.coords.longitude.toFixed(4);
-         $("#reload").click(); },
-    ()=>{ $("#setHint").textContent=f().geoFail(); },
-    {timeout:8000});
-};
 
 /* ===========================================================
    START
    =========================================================== */
 async function boot(reload){
   if(!reload) await load();
-  $("#latIn").value=S.spot.lat; $("#lonIn").value=S.spot.lon;
   $("#wkg").value=S.rider.kg; $("#minw").value=S.minw; $("#maxw").value=S.maxw; $("#norm").value=S.norm;
   $("#srcDot").className="dot load"; $("#srcText").textContent=t("loading");
   applyStatic();
