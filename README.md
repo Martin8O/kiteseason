@@ -2,8 +2,9 @@
 
 **Should I go kiting today — and on which kite?** One phone screen that answers
 it for Lo Stagnone, the lagoon north of Marsala in Sicily: six weather models
-averaged into one forecast, measured against *your* weight, board, kites and
-limits.
+averaged into one forecast — hour by hour from 24 hours to three days ahead,
+and the whole week at a glance — measured against *your* weight, board, kites
+and limits.
 
 **Live:** <https://kiteseason.vercel.app> · Czech & English · no sign-up, no tracking
 
@@ -26,7 +27,7 @@ Everything under it is the evidence for that sentence.
 |---|---|
 | **Now** | The verdict, a satellite map of the spot with wind arrows, an hour strip of today that lights up the rideable hours, and the conditions right now — wind, gusts, direction, air and water temperature, wave height, and which wetsuit that adds up to. |
 | **Hours** | 24 h / 48 h / 3 days of wind and gusts, with a pale band showing how far apart the models are and a line for your floor. Every hour gets a score from 0 to 100 and the kite you would take out. |
-| **Week** | Seven days at a glance, then the **windows** — stretches of at least two hours that meet your limits. One tap puts a window in your calendar (with a reminder an hour before); another copies the week as a message for your riding group. |
+| **Week** | Seven days at a glance, each with its daylight hours laid out as a strip, then the **windows** — stretches of at least two hours that meet your limits, with the wind, direction and model agreement for each. |
 | **Settings** | Your weight, board (twintip · surf · foil), level, the kites you actually own, the wind range you ride in, which way the beach faces, units (m/s · kt · km/h) and which models feed the average. |
 
 ## How it decides
